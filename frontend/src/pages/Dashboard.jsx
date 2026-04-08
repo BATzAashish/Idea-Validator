@@ -9,6 +9,12 @@ function riskTone(risk) {
   return 'risk low'
 }
 
+function scoreTone(score) {
+  if (score >= 75) return { label: 'High', className: 'score-badge high' }
+  if (score >= 45) return { label: 'Medium', className: 'score-badge medium' }
+  return { label: 'Low', className: 'score-badge low' }
+}
+
 function Dashboard() {
   const [ideas, setIdeas] = useState([])
   const [status, setStatus] = useState('idle')
@@ -79,19 +85,28 @@ function Dashboard() {
       )}
 
       {ideas.length > 0 && (
-        <div className="grid">
+        <div className="grid reports-grid">
           {ideas.map((idea) => (
             <article key={idea.id} className="card idea-card">
               <div className="idea-card__top">
                 <div>
+                  <p className="idea-card__label">Report</p>
                   <h3>{idea.title}</h3>
-                  <p className="muted">{idea.description}</p>
+                  <p
+                    className="muted idea-card__summary"
+                    title={idea.problem_summary || idea.description}
+                  >
+                    {idea.problem_summary || idea.description}
+                  </p>
                 </div>
-                <span className={riskTone(idea.risk_level)}>{idea.risk_level}</span>
+                {(() => {
+                  const score = scoreTone(idea.profitability_score)
+                  return <span className={score.className}>{score.label}</span>
+                })()}
               </div>
               <div className="idea-card__meta">
                 <div>
-                  <p className="metric">Profitability score</p>
+                  <p className="metric">Profitability</p>
                   <p className="metric-value">{idea.profitability_score}</p>
                 </div>
                 <div>

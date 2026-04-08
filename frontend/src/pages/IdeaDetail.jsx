@@ -68,35 +68,19 @@ function IdeaDetail() {
         </div>
       </div>
 
-      <div className="grid">
-        <article className="card">
-          <h3>Problem summary</h3>
-          <p>{report.problem_summary}</p>
+      <div className="report-meta">
+        <article className="card stat-card">
+          <p className="metric">Risk level</p>
+          <p className={`risk ${report.risk_level.toLowerCase()}`}>
+            {report.risk_level}
+          </p>
         </article>
-        <article className="card">
-          <h3>Customer persona</h3>
-          <p>{report.customer_persona}</p>
+        <article className="card stat-card">
+          <p className="metric">Profitability score</p>
+          <p className="score">{report.profitability_score}</p>
         </article>
-        <article className="card">
-          <h3>Market overview</h3>
-          <p>{report.market_overview}</p>
-        </article>
-      </div>
-
-      <div className="grid split">
-        <article className="card">
-          <h3>Competitors</h3>
-          <ul className="list">
-            {report.competitors.map((competitor, index) => (
-              <li key={`${competitor.name}-${index}`}>
-                <strong>{competitor.name}</strong>
-                <span>{competitor.differentiation}</span>
-              </li>
-            ))}
-          </ul>
-        </article>
-        <article className="card">
-          <h3>Suggested tech stack</h3>
+        <article className="card stat-card">
+          <p className="metric">Suggested stack</p>
           <div className="chip-row">
             {report.suggested_tech_stack.map((tech) => (
               <span key={tech} className="chip">
@@ -107,23 +91,38 @@ function IdeaDetail() {
         </article>
       </div>
 
-      <div className="grid split">
-        <article className="card">
-          <h3>Risk level</h3>
-          <p className={`risk ${report.risk_level.toLowerCase()}`}>
-            {report.risk_level}
-          </p>
+      <div className="grid report-grid">
+        <article className="card report-card">
+          <h3>Problem summary</h3>
+          <p>{report.problem_summary}</p>
         </article>
-        <article className="card">
-          <h3>Profitability score</h3>
-          <p className="score">{report.profitability_score}</p>
+        <article className="card report-card">
+          <h3>Customer persona</h3>
+          <p>{report.customer_persona}</p>
+        </article>
+        <article className="card report-card">
+          <h3>Market overview</h3>
+          <p>{report.market_overview}</p>
         </article>
       </div>
 
-      <article className="card">
-        <h3>Justification</h3>
-        <p>{report.justification}</p>
-      </article>
+      <div className="grid split">
+        <article className="card report-card">
+          <h3>Competitors</h3>
+          <ul className="list competitors">
+            {report.competitors.map((competitor, index) => (
+              <li key={`${competitor.name}-${index}`}>
+                <strong>{competitor.name}</strong>
+                <span>{competitor.differentiation}</span>
+              </li>
+            ))}
+          </ul>
+        </article>
+        <article className="card report-card justification">
+          <h3>Justification</h3>
+          <p>{report.justification}</p>
+        </article>
+      </div>
     </section>
   )
 }

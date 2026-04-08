@@ -36,6 +36,7 @@ class IdeaListItem(BaseModel):
     id: str
     title: str
     description: str
+    problem_summary: str | None = None
     risk_level: Literal["Low", "Medium", "High"]
     profitability_score: int
     created_at: str

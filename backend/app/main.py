@@ -5,10 +5,14 @@ from bson import ObjectId
 from bson.errors import InvalidId
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
 
 from app.ai import generate_report
 from app.database import get_db
 from app.schemas import IdeaCreate, IdeaListItem, IdeaResponse
+
+_env_path = os.path.join(os.path.dirname(__file__), "..", ".env")
+load_dotenv(_env_path)
 
 app = FastAPI(title="Idea Validator API")
 
@@ -45,6 +49,7 @@ def _serialize_list_item(doc):
         "id": str(doc["_id"]),
         "title": doc.get("title"),
         "description": doc.get("description"),
+        "problem_summary": report.get("problem_summary"),
         "risk_level": report.get("risk_level", "Medium"),
         "profitability_score": report.get("profitability_score", 0),
         "created_at": created_at.isoformat() if created_at else None,

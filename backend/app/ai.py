@@ -1,8 +1,12 @@
 import asyncio
 import json
 import os
+import logging
 
 import google.generativeai as genai
+from groq import Groq
+
+logger = logging.getLogger(__name__)
 
 PROMPT = """
 You are an AI startup idea validator. Return ONLY JSON.
@@ -46,7 +50,7 @@ def _fallback_report():
             "React",
             "FastAPI",
             "MongoDB",
-            "Gemini API",
+            "LLM API",
         ],
         "risk_level": "Medium",
         "profitability_score": 62,
@@ -96,24 +100,67 @@ def _normalize_report(report):
     }
 
 
-def _generate_report_sync(title: str, description: str):
+def _generate_report_with_groq(title: str, description: str):
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key:
+        return None
+
+    model_name = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
+    client = Groq(api_key=api_key)
+
+    payload = {"title": title, "description": description}
+    messages = [
+        {"role": "system", "content": PROMPT.strip()},
+        {"role": "user", "content": f"Input:\n{json.dumps(payload, ensure_ascii=True)}"},
+    ]
+
+    try:
+        response = client.chat.completions.create(
+            model=model_name,
+            messages=messages,
+            temperature=0.7,
+        )
+        text = response.choices[0].message.content.strip()
+        return _normalize_report(json.loads(text))
+    except Exception as exc:
+        logger.warning("Groq request failed: %s", exc)
+        return None
+
+
+def _generate_report_with_gemini(title: str, description: str):
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
-        return _fallback_report()
+        return None
 
     genai.configure(api_key=api_key)
-    model_name = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
+    model_name = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
     model = genai.GenerativeModel(model_name)
 
     payload = {"title": title, "description": description}
     prompt = f"{PROMPT}\nInput:\n{json.dumps(payload, ensure_ascii=True)}"
 
-    response = model.generate_content(
-        prompt,
-        generation_config={"response_mime_type": "application/json"},
-    )
-    text = response.text.strip()
-    return _normalize_report(json.loads(text))
+    try:
+        response = model.generate_content(
+            prompt,
+            generation_config={"response_mime_type": "application/json"},
+        )
+        text = response.text.strip()
+        return _normalize_report(json.loads(text))
+    except Exception as exc:
+        logger.warning("Gemini request failed: %s", exc)
+        return None
+
+
+def _generate_report_sync(title: str, description: str):
+    report = _generate_report_with_groq(title, description)
+    if report:
+        return report
+
+    report = _generate_report_with_gemini(title, description)
+    if report:
+        return report
+
+    return _fallback_report()
 
 
 async def generate_report(title: str, description: str):
