@@ -46,6 +46,8 @@ MONGODB_URI=mongodb://localhost:27017
 MONGODB_DB=idea_validator
 GEMINI_API_KEY=your_key_here
 GEMINI_MODEL=gemini-2.0-flash
+GROQ_API_KEY=your_key_here
+GROQ_MODEL=llama-3.1-8b-instant
 CORS_ORIGINS=http://localhost:5173
 ```
 
