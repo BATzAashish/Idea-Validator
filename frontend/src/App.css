@@ -214,6 +214,7 @@
 .reports-grid {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   align-items: start;
+  grid-auto-rows: 1fr;
 }
 
 .grid.split {
@@ -225,6 +226,7 @@
   flex-direction: column;
   gap: 12px;
   min-height: 420px;
+  height: 100%;
 }
 
 .idea-card__label {
@@ -252,7 +254,7 @@
 .idea-card__summary {
   line-height: 1.55;
   display: -webkit-box;
-  -webkit-line-clamp: 5;
+  -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
